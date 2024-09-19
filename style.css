@@ -1,0 +1,41 @@
+section {
+  margin-bottom: 20px;
+  color: #f8f9fa;
+}
+
+footer a {
+  display: block;
+  font-size: 2rem;
+  color: white;
+}
+
+nav:not(.not-style) {
+  background-color: #264653;
+}
+
+.card p {
+  color: #E9C46A;
+}
+
+.detail span.fw-bold {
+  color: #E9C46A;
+}
+
+.detail span:not(.fw-bold) {
+  color: #F1FAEE;
+  font-weight: lighter;
+  font-family: Sans-Serif;
+}
+
+.overlay {
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background-repeat: no-repeat;
+  position: absolute;
+  opacity: 0.1;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  background-position: center;
+}
