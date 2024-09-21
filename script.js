@@ -286,6 +286,7 @@ async function searchDataFromApi() {
 
 function init() {
   switch (global.path) {
+    case "":
     case "/":
     case "/index.html":
       slideNowPlayingMovie("movie")
