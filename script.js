@@ -73,6 +73,8 @@ function createPagination() {
   const nextBtn = document.createElement("button");
   const preBtn = document.createElement("button");
   
+  const type = global.path.split(".")[0].slice(1);
+  
   div.className = "col-10";
   paginationHeading.className = "fw-bold text-center mb-3";
   nextBtn.setAttribute("id", "next")
@@ -80,7 +82,7 @@ function createPagination() {
   nextBtn.className = "btn btn-primary mx-3";
   preBtn.className = "btn btn-primary";
   
-  paginationHeading.innerHTML = `<span class="current-page">Page ${ global.search.page } </span>of ${ global.search.totalPages } for <span class="text-info">${ global.search.name }</span>`;
+  paginationHeading.innerHTML = `<span class="current-page">Page ${ global.search.page } </span> of ${ global.search.totalPages }<span class="text-info">${ type !== "search" ? "" : "for " + global.search.name } </span>`;
   nextBtn.innerText = "Next";
   preBtn.innerText = "Previous";
   
@@ -91,40 +93,32 @@ function createPagination() {
   console.log(global.search.page, global.search.totalPages)
   global.search.page === 1 ? preBtn.disabled = true : preBtn.disabled = false;
   global.search.page === global.search.totalPages? nextBtn.disabled = true : nextBtn.disabled = false;
-    
   
   nextBtn.addEventListener("click", async () => {
     global.search.page++;
-    console.log(global.search.page, global.search.totalPages)
     global.search.page === 1 ? preBtn.disabled = true : preBtn.disabled = false;
-    global.search.page === global.search.totalPages? nextBtn.disabled = true : nextBtn.disabled = false;
+    global.search.page === global.search.totalPages ? nextBtn.disabled = true : nextBtn.disabled = false;
     
-    document.querySelector(".search-list").innerHTML = "";
-    document.querySelector(".current-page").innerText = global.search.page;
+    document.querySelector(`.${type}-list`).innerHTML = "";
+    document.querySelector(".current-page").innerText = "Page " + global.search.page;
     
-    const { results } = await searchDataFromApi();
-    
+    const { results } = type !== "search" ? await getDataFromApi(`discover/${ type }`) : await searchDataFromApi();
     results.forEach(data => {
-      createMoviePoster(global.search.type, data)
+      type !== "search" ? createMoviePoster(type, data) : createMoviePoster(global.search.type, data)
     })
-    document.querySelector(".pagination-heading").innerHTML = `Page ${ global.search.page } of ${ global.search.totalPages } for <span class="text-info">${ global.search.name }</span>`;
   })
   preBtn.addEventListener("click", async () => {
     global.search.page--;
-    
-    console.log(global.search.page, global.search.totalPages)
     global.search.page === 1 ? preBtn.disabled = true : preBtn.disabled = false;
     global.search.page === global.search.totalPages? nextBtn.disabled = true : nextBtn.disabled = false;
     
-    document.querySelector(".search-list").innerHTML = "";
-    document.querySelector(".current-page").innerText = global.search.page
+    document.querySelector(`.${ type }-list`).innerHTML = "";
+    document.querySelector(".current-page").innerText = "Page " + global.search.page
     
-    const { results } = await searchDataFromApi();
-    
+    const { results } = type !== "search" ? await getDataFromApi(`discover/${ type }`) : await searchDataFromApi();
     results.forEach(data => {
-      createMoviePoster(global.search.type, data)
+      type !== "search" ? createMoviePoster(type, data) : createMoviePoster(global.search.type, data)
     })
-    document.querySelector(".pagination-heading").innerHTML = `Page ${ global.search.page } of ${ global.search.totalPages } for <span class="text-info">${ global.search.name }</span>`;
   })
 }
 
@@ -168,20 +162,27 @@ async function getPopularMovie() {
 }
 
 async function getMovie() {
-  const { results } = await getDataFromApi("discover/movie");
-
+  const { results, page, total_pages } = await getDataFromApi("discover/movie");
+  
+  global.search.page = page;
+  global.search.totalPages = total_pages;
+  
   results.forEach(movie => {
     createMoviePoster("movie", movie);
   })
+  createPagination();
 }
 
 async function getTv() {
-  const { results } = await getDataFromApi("discover/tv");
+  const { results, page, total_pages } = await getDataFromApi("discover/tv");
   
-  console.log(results)
+  global.search.page = page;
+  global.search.totalPages = total_pages;
+  
   results.forEach(tv => {
-  createMoviePoster("tv", tv);
+    createMoviePoster("tv", tv);
   })
+  createPagination();
 }
 
 async function getMovieDetail(type) {
@@ -265,8 +266,8 @@ function imgChecker(data) {
 async function getDataFromApi(endpoint) {
   const API_KEY = global.api.key;
   const API_URL = global.api.url;
-  
-  const res = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US&page=${global.search.page}`);
+
+  const res = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US&page=${ global.search.page }`);
   const data = await res.json();
   
   return data;
