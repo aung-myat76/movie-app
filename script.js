@@ -82,7 +82,7 @@ function createPagination() {
   nextBtn.className = "btn btn-primary mx-3";
   preBtn.className = "btn btn-primary";
   
-  paginationHeading.innerHTML = `<span class="current-page">Page ${ global.search.page } </span> of ${ global.search.totalPages }<span class="text-info">${ type !== "search" ? "" : "for " + global.search.name } </span>`;
+  paginationHeading.innerHTML = `<span class="current-page">Page ${ global.search.page } </span> of ${ global.search.totalPages }<span class="text-info">${ type !== "search" ? "" : " for " + global.search.name } </span>`;
   nextBtn.innerText = "Next";
   preBtn.innerText = "Previous";
   
@@ -92,7 +92,7 @@ function createPagination() {
   
   console.log(global.search.page, global.search.totalPages)
   global.search.page === 1 ? preBtn.disabled = true : preBtn.disabled = false;
-  global.search.page === global.search.totalPages? nextBtn.disabled = true : nextBtn.disabled = false;
+  global.search.page === global.search.totalPages ? nextBtn.disabled = true : nextBtn.disabled = false;
   
   nextBtn.addEventListener("click", async () => {
     global.search.page++;
